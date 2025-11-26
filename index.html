@@ -382,6 +382,90 @@ corpo {
         ]
       });
 
+      // Add color provider for FolEs
+      monaco.languages.registerColorProvider('foles', {
+        provideDocumentColors(model) {
+          const colors = [];
+          const text = model.getValue();
+          
+          // Match hex colors (#fff, #ffffff)
+          const hexRegex = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g;
+          let match;
+          while ((match = hexRegex.exec(text)) !== null) {
+            const hex = match[1];
+            const fullHex = hex.length === 3 
+              ? hex.split('').map(c => c + c).join('')
+              : hex;
+            
+            const r = parseInt(fullHex.substr(0, 2), 16) / 255;
+            const g = parseInt(fullHex.substr(2, 2), 16) / 255;
+            const b = parseInt(fullHex.substr(4, 2), 16) / 255;
+            
+            colors.push({
+              color: { red: r, green: g, blue: b, alpha: 1 },
+              range: {
+                startLineNumber: model.getPositionAt(match.index).lineNumber,
+                startColumn: model.getPositionAt(match.index).column,
+                endLineNumber: model.getPositionAt(match.index + match[0].length).lineNumber,
+                endColumn: model.getPositionAt(match.index + match[0].length).column
+              }
+            });
+          }
+          
+          // Match rgb/rgba colors
+          const rgbRegex = /rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/g;
+          while ((match = rgbRegex.exec(text)) !== null) {
+            const r = parseInt(match[1]) / 255;
+            const g = parseInt(match[2]) / 255;
+            const b = parseInt(match[3]) / 255;
+            const a = match[4] ? parseFloat(match[4]) : 1;
+            
+            colors.push({
+              color: { red: r, green: g, blue: b, alpha: a },
+              range: {
+                startLineNumber: model.getPositionAt(match.index).lineNumber,
+                startColumn: model.getPositionAt(match.index).column,
+                endLineNumber: model.getPositionAt(match.index + match[0].length).lineNumber,
+                endColumn: model.getPositionAt(match.index + match[0].length).column
+              }
+            });
+          }
+          
+          return colors;
+        },
+        
+        provideColorPresentations(model, colorInfo) {
+          const color = colorInfo.color;
+          const r = Math.round(color.red * 255);
+          const g = Math.round(color.green * 255);
+          const b = Math.round(color.blue * 255);
+          const a = color.alpha;
+          
+          const toHex = (n) => {
+            const hex = n.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+          };
+          
+          const presentations = [
+            {
+              label: `#${toHex(r)}${toHex(g)}${toHex(b)}`
+            }
+          ];
+          
+          if (a < 1) {
+            presentations.push({
+              label: `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`
+            });
+          } else {
+            presentations.push({
+              label: `rgb(${r}, ${g}, ${b})`
+            });
+          }
+          
+          return presentations;
+        }
+      });
+
       const folesEditor = monaco.editor.create(document.getElementById('editor'), {
         value: initialFolEs,
         language: 'foles',
