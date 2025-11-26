@@ -310,9 +310,81 @@ corpo {
     }
 
     require(['vs/editor/editor.main'], function() {
+      // Register FolEs language
+      monaco.languages.register({ id: 'foles' });
+      
+      // Define FolEs syntax highlighting
+      monaco.languages.setMonarchTokensProvider('foles', {
+        tokenizer: {
+          root: [
+            [/\/\*/, 'comment', '@comment'],
+            [/\/\/.*$/, 'comment'],
+            [/@[\w-]+/, 'keyword'],
+            [/#[a-zA-Z][\w-]*/, 'tag.id'],
+            [/\.[a-zA-Z][\w-]*/, 'tag.class'],
+            [/[a-zç]+/, 'tag'],
+            [/[\w-]+(?=\s*:)/, 'attribute.name'],
+            [/:/, 'delimiter'],
+            [/;/, 'delimiter'],
+            [/\{/, 'delimiter.bracket', '@block'],
+            [/\}/, 'delimiter.bracket'],
+            [/#[0-9a-fA-F]{3,6}\b/, 'number.hex'],
+            [/[0-9]+\.?[0-9]*/, 'number'],
+            [/(px|em|rem|%|pt|cm|mm|in|pc|ex|ch|vw|vh|vmin|vmax|deg|rad|grad|turn|s|ms)/, 'keyword.unit'],
+            [/"([^"\\]|\\.)*$/, 'string.invalid'],
+            [/"/, 'string', '@string_double'],
+            [/'([^'\\]|\\.)*$/, 'string.invalid'],
+            [/'/, 'string', '@string_single'],
+          ],
+          comment: [
+            [/\*\//, 'comment', '@pop'],
+            [/./, 'comment']
+          ],
+          block: [
+            [/\}/, 'delimiter.bracket', '@pop'],
+            { include: '@root' }
+          ],
+          string_double: [
+            [/[^\\"]+/, 'string'],
+            [/"/, 'string', '@pop']
+          ],
+          string_single: [
+            [/[^\\']+/, 'string'],
+            [/'/, 'string', '@pop']
+          ]
+        }
+      });
+      
+      // Define FolEs language configuration
+      monaco.languages.setLanguageConfiguration('foles', {
+        comments: {
+          lineComment: '//',
+          blockComment: ['/*', '*/']
+        },
+        brackets: [
+          ['{', '}'],
+          ['[', ']'],
+          ['(', ')']
+        ],
+        autoClosingPairs: [
+          { open: '{', close: '}' },
+          { open: '[', close: ']' },
+          { open: '(', close: ')' },
+          { open: '"', close: '"' },
+          { open: "'", close: "'" }
+        ],
+        surroundingPairs: [
+          { open: '{', close: '}' },
+          { open: '[', close: ']' },
+          { open: '(', close: ')' },
+          { open: '"', close: '"' },
+          { open: "'", close: "'" }
+        ]
+      });
+
       const folesEditor = monaco.editor.create(document.getElementById('editor'), {
         value: initialFolEs,
-        language: 'css',
+        language: 'foles',
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 14,
