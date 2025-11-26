@@ -320,9 +320,9 @@ corpo {
             [/\/\*/, 'comment', '@comment'],
             [/\/\/.*$/, 'comment'],
             [/@[\w-]+/, 'keyword'],
-            [/#[a-zA-Z][\w-]*/, 'tag.id'],
-            [/\.[a-zA-Z][\w-]*/, 'tag.class'],
-            [/[a-zç]+/, 'tag'],
+            [/#[a-zA-ZÀ-ÿ][\w-]*/, 'tag.id'],
+            [/\.[a-zA-ZÀ-ÿ][\w-]*/, 'tag.class'],
+            [/[a-zçãõáéíóúâêîôûàèìòùäëïöüA-ZÇÃÕÁÉÍÓÚÂÊÎÔÛÀÈÌÒÙÄËÏÖÜ]+/, 'tag'],
             [/[\w-]+(?=\s*:)/, 'attribute.name'],
             [/:/, 'delimiter'],
             [/;/, 'delimiter'],
@@ -472,7 +472,11 @@ corpo {
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 14,
-        minimap: { enabled: false }
+        minimap: { enabled: false },
+        unicodeHighlight: {
+          ambiguousCharacters: false,
+          invisibleCharacters: false
+        }
       });
 
       const lmhtEditor = monaco.editor.create(document.getElementById('lmhtEditor'), {
@@ -481,7 +485,11 @@ corpo {
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 14,
-        minimap: { enabled: false }
+        minimap: { enabled: false },
+        unicodeHighlight: {
+          ambiguousCharacters: false,
+          invisibleCharacters: false
+        }
       });
 
       function updatePreview() {
