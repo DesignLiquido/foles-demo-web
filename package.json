@@ -5,7 +5,9 @@
   "main": "index.html",
   "homepage": "https://designliquido.github.io/lincones-demo-web",
   "scripts": {
+    "copiar-arquivos": "yarn copy-files-from-to --force",
     "deploy": "gh-pages -d .",
+    "gerar-web": "yarn tsc && yarn browserify dist/index.js --s FolEs -o dist/foles.js",
     "predeploy": "echo 'Preparando deploy...'",
     "publicar": "yarn deploy"
   },
@@ -24,7 +26,47 @@
   ],
   "author": "Design Líquido",
   "license": "MIT",
+  "dependencies": {
+    "@designliquido/foles": "^0.12.0",
+    "@designliquido/lmht-js": "^0.6.0"
+  },
   "devDependencies": {
-    "gh-pages": "^6.1.1"
+    "browserify": "^17.0.1",
+    "copy-files-from-to": "^3.13.0",
+    "gh-pages": "^6.1.1",
+    "typescript": "^5.9.3"
+  },
+  "copyFiles": [
+    {
+      "from": "index.html",
+      "to": "dist/index.html"
+    },
+    {
+      "from": "exemplos.html",
+      "to": "dist/exemplos.html"
+    },
+    {
+      "from": "favicon.ico",
+      "to": "dist/favicon.ico"
+    },
+    {
+      "from": "./icones/**",
+      "to": "dist/icones/"
+    },
+    {
+      "from": "node_modules/monaco-editor/min/vs/**/*",
+      "to": "dist/vs"
+    },
+    {
+      "from": "node_modules/monaco-editor/min-maps/**/*",
+      "to": "dist/min-maps"
+    },
+    {
+      "from": "nls/default.js",
+      "to": "dist/vs/editor/editor.main.nls.js"
+    }
+  ],
+  "copyFilesSettings": {
+    "whenFileExists": "overwrite"
   }
 }
