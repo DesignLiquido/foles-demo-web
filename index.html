@@ -91,35 +91,36 @@
     </div>
   </div>
 
+  <script src="foles.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
   <script>
     require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
     
     const templateLMHT = `<lmht>
   <cabeça>
-    <titulo>Meu Site</titulo>
+    <título>Meu Site</título>
   </cabeça>
   <corpo>
     <cabeçalho classe="cabecalho">
-      <titulo1 classe="titulo">Meu Site</titulo1>
+      <título1 classe="titulo">Meu Site</título1>
       <navegação classe="navegacao">
-        <ligacao destino="#" classe="link-nav">Início</ligacao>
-        <ligacao destino="#" classe="link-nav">Sobre</ligacao>
-        <ligacao destino="#" classe="link-nav">Contato</ligacao>
+        <ligação destino="#" classe="link-nav">Início</ligação>
+        <ligação destino="#" classe="link-nav">Sobre</ligação>
+        <ligação destino="#" classe="link-nav">Contato</ligação>
       </navegação>
     </cabeçalho>
-    
+
     <principal classe="conteudo-principal">
       <seção classe="cartao">
-        <titulo2 classe="titulo-cartao">Bem-vindo</titulo2>
+        <título2 classe="titulo-cartao">Bem-vindo</título2>
         <p classe="texto-cartao">Este é um template com classes predefinidas.</p>
-        <botao classe="btn">Clique Aqui</botao>
+        <botão classe="btn">Clique Aqui</botão>
       </seção>
     </principal>
-    
-    <rodape classe="rodape">
-      <p classe="texto-rodape">© 2024 Meu Site</p>
-    </rodape>
+
+    <rodapé classe="rodape">
+      <p classe="texto-rodape">© 2026 Meu Site</p>
+    </rodapé>
   </corpo>
 </lmht>`;
 
@@ -131,16 +132,16 @@ lmht {
 
 corpo {
   margem: 0;
-  preenchimento: 20px;
+  recuo: 20px;
   fundo: #f5f5f5;
-  familia-fonte: Arial, sans-serif;
+  fonte-texto: Arial, sem-serifa;
 }
 
 .cabecalho {
-  fundo: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  cor: white;
-  preenchimento: 30px;
-  borda-arredondamento: 10px;
+  fundo: gradiente-linear(135deg, #667eea 0%, #764ba2 100%);
+  cor: branco;
+  recuo: 30px;
+  raio-borda: 10px;
   margem-inferior: 20px;
 }
 
@@ -155,13 +156,13 @@ corpo {
 }
 
 .link-nav {
-  cor: white;
-  decoração-texto: nenhum;
-  peso-fonte: negrito;
+  cor: branco;
+  decoração-texto: nenhuma;
+  espessura-fonte: em-negrito;
   transição: opacidade 0.3s;
 }
 
-.link-nav:hover {
+.link-nav:sobre {
   opacidade: 0.8;
 }
 
@@ -170,11 +171,11 @@ corpo {
 }
 
 .cartao {
-  fundo: white;
-  borda: 2px solid #e0e0e0;
-  borda-arredondamento: 10px;
-  preenchimento: 30px;
-  sombra-caixa: 0 4px 6px rgba(0,0,0,0.1);
+  fundo: branco;
+  borda: 2px sólido #e0e0e0;
+  raio-borda: 10px;
+  recuo: 30px;
+  sombra-caixa: 0 4px 6px #0000001a;
 }
 
 .titulo-cartao {
@@ -190,25 +191,25 @@ corpo {
 
 .btn {
   fundo: #667eea;
-  cor: white;
+  cor: branco;
   borda: nenhum;
-  preenchimento: 12px 30px;
-  borda-arredondamento: 5px;
-  cursor: ponteiro;
+  recuo: 12px 30px;
+  raio-borda: 5px;
+  cursor: indicador;
   tamanho-fonte: 16px;
   transição: fundo 0.3s;
 }
 
-.btn:hover {
+.btn:sobre {
   fundo: #5568d3;
 }
 
 .rodape {
   fundo: #333;
-  cor: white;
-  preenchimento: 20px;
-  borda-arredondamento: 10px;
-  alinhamento-texto: centro;
+  cor: branco;
+  recuo: 20px;
+  raio-borda: 10px;
+  alinhar-texto: centro;
   margem-superior: 20px;
 }
 
@@ -401,7 +402,25 @@ corpo {
       function atualizarPrevia() {
         const foles = folesEditor.getValue();
         const lmht = lmhtEditor.getValue();
-        const css = folesParaCSS(foles);
+
+        const resultadoFoles = analisarFoles(foles);
+        const errosMarkers = resultadoFoles.erros.map(function(erro) {
+          const linha = (erro.simbolo && erro.simbolo.linha) || 1;
+          const colunaInicial = (erro.simbolo && erro.simbolo.colunaInicial) || 1;
+          const colunaFinal = (erro.simbolo && erro.simbolo.colunaFinal) || 1000;
+          return {
+            startLineNumber: linha,
+            startColumn: colunaInicial,
+            endLineNumber: linha,
+            endColumn: colunaFinal,
+            message: erro.message || erro.mensagem,
+            severity: 8 // MarkerSeverity.Error
+          };
+        });
+        monaco.editor.setModelMarkers(folesEditor.getModel(), 'foles', errosMarkers);
+
+        if (resultadoFoles.css === null) return;
+        const css = resultadoFoles.css;
         const html = lmhtParaHTML(lmht);
         
         const fullHTML = `

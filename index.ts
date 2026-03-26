@@ -1,101 +1,48 @@
-import { Lexador, AvaliadorSintatico } from "@designliquido/foles";
+import { Lexador, AvaliadorSintatico, Resolvedor } from "@designliquido/foles";
 import { Tradutor } from "@designliquido/foles/tradutores/tradutor";
 import { TradutorReverso } from "@designliquido/foles/tradutores/tradutor-reverso";
 import { ImportadorWeb } from "./importador-web";
+import { LexadorLmht } from "@designliquido/lmht-js/fontes/lexador/lexador-lmht";
+import { AvaliadorSintaticoLmht } from "@designliquido/lmht-js/fontes/avaliador-sintatico/avaliador-sintatico-lmht";
+import { TradutorHtml } from "@designliquido/lmht-js/fontes/tradutores/tradutor-html";
 
-(window as any).lexador = new Lexador();
-(window as any).importador = new ImportadorWeb((window as any).lexador);
-(window as any).avaliadorSintatico = new AvaliadorSintatico((window as any).importador);
-(window as any).tradutor = new Tradutor();
+const lexador = new Lexador();
+const importador = new ImportadorWeb(lexador);
+const avaliadorSintatico = new AvaliadorSintatico(importador);
+const tradutor = new Tradutor();
+const resolvedor = new Resolvedor();
+
+const lexadorLmht = new LexadorLmht();
+const avaliadorSintaticoLmht = new AvaliadorSintaticoLmht();
+const tradutorHtml = new TradutorHtml();
+
+(window as any).lexador = lexador;
+(window as any).importador = importador;
+(window as any).avaliadorSintatico = avaliadorSintatico;
+(window as any).tradutor = tradutor;
 (window as any).tradutorReverso = new TradutorReverso();
+(window as any).resolvedor = resolvedor;
 
-export function folesParaCSS(foles: string): string {
-  const traducoes = {
-    // Propriedades
-    "tamanho-fonte": "font-size",
-    margem: "margin",
-    preenchimento: "padding",
-    fundo: "background",
-    cor: "color",
-    borda: "border",
-    "borda-arredondamento": "border-radius",
-    "margem-inferior": "margin-bottom",
-    "margem-superior": "margin-top",
-    "familia-fonte": "font-family",
-    exibição: "display",
-    espaçamento: "gap",
-    "decoração-texto": "text-decoration",
-    "peso-fonte": "font-weight",
-    transição: "transition",
-    opacidade: "opacity",
-    "sombra-caixa": "box-shadow",
-    "altura-linha": "line-height",
-    cursor: "cursor",
-    "alinhamento-texto": "text-align",
-
-    // Valores
-    nenhum: "none",
-    negrito: "bold",
-    ponteiro: "pointer",
-    centro: "center",
-
-    // Tags
-    lmht: "html",
-    corpo: "body",
-    cabeçalho: "header",
-    navegação: "nav",
-    ligacao: "a",
-    principal: "main",
-    seção: "section",
-    botao: "button",
-    rodape: "footer",
-  };
-
-  let css = foles;
-  for (const [pt, en] of Object.entries(traducoes)) {
-    const regex = new RegExp("\\b" + pt + "\\b", "g");
-    css = css.replace(regex, en);
+export function analisarFoles(foles: string): { css: string | null, erros: any[] } {
+  try {
+    const resultadoLexador = lexador.mapear(foles.split('\n'));
+    const declaracoes = avaliadorSintatico.analisar(resultadoLexador.simbolos);
+    if (avaliadorSintatico.erros.length > 0) {
+      return { css: null, erros: avaliadorSintatico.erros };
+    }
+    const blocos = tradutor.traduzir(declaracoes);
+    const css = resolvedor.resolver(blocos);
+    return { css, erros: [] };
+  } catch (erro: any) {
+    return { css: null, erros: [erro] };
   }
-
-  return css;
 }
 
 export function lmhtParaHTML(lmht: string): string {
-  const traducoes = {
-    "<lmht>": "<html>",
-    "</lmht>": "</html>",
-    "<cabeça>": "<head>",
-    "</cabeça>": "</head>",
-    "<corpo>": "<body>",
-    "</corpo>": "</body>",
-    "<cabeçalho": "<header",
-    "</cabeçalho>": "</header>",
-    "<titulo>": "<title>",
-    "</titulo>": "</title>",
-    "<titulo1": "<h1",
-    "</titulo1>": "</h1>",
-    "<titulo2": "<h2",
-    "</titulo2>": "</h2>",
-    "<navegação": "<nav",
-    "</navegação>": "</nav>",
-    "<ligacao": "<a",
-    "</ligacao>": "</a>",
-    "<principal": "<main",
-    "</principal>": "</main>",
-    "<seção": "<section",
-    "</seção>": "</section>",
-    "<botao": "<button",
-    "</botao>": "</button>",
-    "<rodape": "<footer",
-    "</rodape>": "</footer>",
-    "classe=": "class=",
-    "destino=": "href=",
-  };
-
-  let html = lmht;
-  for (const [pt, en] of Object.entries(traducoes)) {
-    html = html.split(pt).join(en);
-  }
-
-  return html;
+  const { tokens } = lexadorLmht.mapear(lmht);
+  const { arvore } = avaliadorSintaticoLmht.analisar(tokens);
+  return tradutorHtml.traduzir(arvore);
 }
+
+(window as any).analisarFoles = analisarFoles;
+(window as any).lmhtParaHTML = lmhtParaHTML;
