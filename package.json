@@ -10,7 +10,7 @@
     "empacotar": "yarn del-cli ./dist && yarn gerar-web && yarn copiar-arquivos",
     "gerar-web": "yarn tsc && yarn browserify dist/index.js --s FolEs -o dist/foles.js",
     "predeploy": "echo 'Preparando deploy...'",
-    "publicar": "yarn deploy",
+    "publicar": "yarn empacotar && yarn deploy",
     "servir": "yarn http-server -o ./dist -c-1",
     "testar": "yarn empacotar && yarn servir"
   },
