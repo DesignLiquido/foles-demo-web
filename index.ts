@@ -1,10 +1,12 @@
 import { Lexador, AvaliadorSintatico, Resolvedor } from "@designliquido/foles";
 import { Tradutor } from "@designliquido/foles/tradutores/tradutor";
 import { TradutorReverso } from "@designliquido/foles/tradutores/tradutor-reverso";
+import listaModificadoresFoles from "@designliquido/foles/extensao/lista-modificadores";
 import { ImportadorWeb } from "./importador-web";
 import { LexadorLmht } from "@designliquido/lmht-js/fontes/lexador/lexador-lmht";
 import { AvaliadorSintaticoLmht } from "@designliquido/lmht-js/fontes/avaliador-sintatico/avaliador-sintatico-lmht";
 import { TradutorHtml } from "@designliquido/lmht-js/fontes/tradutores/tradutor-html";
+import { MAPEAMENTO_TAGS } from "@designliquido/lmht-js/fontes/tradutores/mapeamento-tags";
 
 const lexador = new Lexador();
 const importador = new ImportadorWeb(lexador);
@@ -46,3 +48,5 @@ export function lmhtParaHTML(lmht: string): string {
 
 (window as any).analisarFoles = analisarFoles;
 (window as any).lmhtParaHTML = lmhtParaHTML;
+(window as any).listaModificadoresFoles = listaModificadoresFoles;
+(window as any).mapeamentoTagsLmht = MAPEAMENTO_TAGS;
