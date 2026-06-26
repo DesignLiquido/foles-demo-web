@@ -30,7 +30,7 @@
   "author": "Design Líquido",
   "license": "MIT",
   "dependencies": {
-    "@designliquido/foles": "^0.15.1",
+    "@designliquido/foles": "^0.16.0",
     "@designliquido/lmht-js": "^0.6.2"
   },
   "devDependencies": {
