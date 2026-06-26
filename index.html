@@ -373,6 +373,29 @@ corpo {
         }
       });
 
+      monaco.languages.registerCompletionItemProvider('foles', {
+        provideCompletionItems: function(model, position) {
+          const word = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+          };
+          const suggestions = [];
+          for (const [chave, valor] of Object.entries(listaModificadoresFoles)) {
+            suggestions.push({
+              label: chave,
+              kind: monaco.languages.CompletionItemKind.Property,
+              documentation: 'Equivalente em CSS: ' + valor.nomeCss,
+              insertText: chave,
+              range: range
+            });
+          }
+          return { suggestions: suggestions };
+        }
+      });
+
       const folesEditor = monaco.editor.create(document.getElementById('editor'), {
         value: initialFolEs,
         language: 'foles',
@@ -441,6 +464,29 @@ corpo {
           { open: '"', close: '"' },
           { open: "'", close: "'" }
         ]
+      });
+
+      monaco.languages.registerCompletionItemProvider('lmht', {
+        provideCompletionItems: function(model, position) {
+          const word = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+          };
+          const suggestions = [];
+          for (const [chave, valor] of Object.entries(mapeamentoTagsLmht)) {
+            suggestions.push({
+              label: chave,
+              kind: monaco.languages.CompletionItemKind.Property,
+              documentation: 'Equivalente em HTML: ' + valor,
+              insertText: chave,
+              range: range
+            });
+          }
+          return { suggestions: suggestions };
+        }
       });
 
       const lmhtEditor = monaco.editor.create(document.getElementById('lmhtEditor'), {

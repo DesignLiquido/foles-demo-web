@@ -1,14 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.analisarFoles = analisarFoles;
 exports.lmhtParaHTML = lmhtParaHTML;
 const foles_1 = require("@designliquido/foles");
 const tradutor_1 = require("@designliquido/foles/tradutores/tradutor");
 const tradutor_reverso_1 = require("@designliquido/foles/tradutores/tradutor-reverso");
+const lista_modificadores_1 = __importDefault(require("@designliquido/foles/extensao/lista-modificadores"));
 const importador_web_1 = require("./importador-web");
 const lexador_lmht_1 = require("@designliquido/lmht-js/fontes/lexador/lexador-lmht");
 const avaliador_sintatico_lmht_1 = require("@designliquido/lmht-js/fontes/avaliador-sintatico/avaliador-sintatico-lmht");
 const tradutor_html_1 = require("@designliquido/lmht-js/fontes/tradutores/tradutor-html");
+const mapeamento_tags_1 = require("@designliquido/lmht-js/fontes/tradutores/mapeamento-tags");
 const lexador = new foles_1.Lexador();
 const importador = new importador_web_1.ImportadorWeb(lexador);
 const avaliadorSintatico = new foles_1.AvaliadorSintatico(importador);
@@ -45,3 +50,5 @@ function lmhtParaHTML(lmht) {
 }
 window.analisarFoles = analisarFoles;
 window.lmhtParaHTML = lmhtParaHTML;
+window.listaModificadoresFoles = lista_modificadores_1.default;
+window.mapeamentoTagsLmht = mapeamento_tags_1.MAPEAMENTO_TAGS;
